@@ -18,6 +18,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
         }
         h1 {
             font-size: 24px;
@@ -56,8 +57,11 @@
             background-color: #0056b3;
         }
         .thumbnail-container {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-top: 20px;
+            position: relative;
         }
         .thumbnail {
             max-width: 100%;
@@ -65,19 +69,34 @@
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .help-button {
+        .text-editor {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 8px 16px;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .text-editor input[type="range"] {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .download-button {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
             font-size: 16px;
             background-color: #007bff;
             color: #fff;
             border: none;
-            border-radius: 50%;
+            border-radius: 8px;
             cursor: pointer;
         }
-        .help-button:hover {
+        .download-button:hover {
             background-color: #0056b3;
         }
     </style>
@@ -85,40 +104,79 @@
 <body>
     <div class="container">
         <h1>YouTube Thumbnail Creator</h1>
-        <form method="POST" action="/">
+        <form method="POST" action="/" id="thumbnailForm">
             <label for="description">Description:</label><br>
             <textarea id="description" name="description" rows="4" cols="50" placeholder="Enter a description for your thumbnail..."></textarea><br><br>
             <input type="submit" value="Generate Thumbnail">
         </form>
-        {% if thumbnail_url %}
-        <div class="thumbnail-container">
-            <h2>Generated Thumbnail:</h2>
-            <img class="thumbnail" src="{{ thumbnail_url }}" alt="Thumbnail">
+        <div class="thumbnail-container" id="thumbnailContainer">
+            <img class="thumbnail" id="thumbnailImage" src="" alt="Thumbnail" style="display: none;">
+            <div class="text-editor" id="textEditor">
+                <label for="fontSize">Font Size:</label>
+                <input type="range" id="fontSize" name="fontSize" min="10" max="40" value="20"><br>
+                <label for="fontStyle">Font Style:</label>
+                <select id="fontStyle" name="fontStyle">
+                    <option value="normal">Normal</option>
+                    <option value="italic">Italic</option>
+                    <option value="oblique">Oblique</option>
+                </select>
+            </div>
         </div>
-        {% endif %}
-        <button class="help-button" onclick="showHelp()">?</button>
-    </div>
-
-    <!-- Help Modal -->
-    <div id="helpModal" style="display: none;">
-        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);"></div>
-        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 9999;">
-            <h2 style="margin-top: 0;">Help</h2>
-            <p>This tool allows you to generate thumbnails for YouTube videos based on a textual description. Enter a description in the input field and click "Generate Thumbnail" to create a thumbnail image.</p>
-            <p>The generated thumbnail will be displayed below the input field. You can use the image for your YouTube video Thumbnail.</p>
-            <!-- Placeholder for copyright-free image -->
-            <button style="padding: 8px 16px; font-size: 16px; background-color: #007bff; color: #fff; border: none; border-radius: 8px; cursor: pointer;" onclick="hideHelp()">Close</button>
-        </div>
+        <button class="download-button" id="downloadButton" onclick="downloadThumbnail()">Download</button>
     </div>
 
     <script>
-        function showHelp() {
-            document.getElementById("helpModal").style.display = "block";
+        document.getElementById("thumbnailForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            generateThumbnail();
+        });
+
+        function generateThumbnail() {
+            var description = document.getElementById("description").value;
+            // Placeholder for generating thumbnail
+            // Replace this with actual code to generate thumbnail
+            var thumbnailUrl = "https://via.placeholder.com/500";
+            displayThumbnail(thumbnailUrl);
         }
 
-        function hideHelp() {
-            document.getElementById("helpModal").style.display = "none";
+        function displayThumbnail(thumbnailUrl) {
+            var thumbnailImage = document.getElementById("thumbnailImage");
+            thumbnailImage.src = thumbnailUrl;
+            thumbnailImage.style.display = "block";
+            showTextEditor();
+            showDownloadButton();
         }
+
+        function showTextEditor() {
+            var textEditor = document.getElementById("textEditor");
+            textEditor.style.display = "block";
+        }
+
+        function showDownloadButton() {
+            var downloadButton = document.getElementById("downloadButton");
+            downloadButton.style.display = "block";
+        }
+
+        function downloadThumbnail() {
+            var thumbnailImage = document.getElementById("thumbnailImage");
+            var link = document.createElement("a");
+            link.href = thumbnailImage.src;
+            link.download = "thumbnail.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Listen for changes in text editor inputs
+        document.getElementById("fontSize").addEventListener("input", function() {
+            var thumbnailImage = document.getElementById("thumbnailImage");
+            thumbnailImage.style.fontSize = this.value + "px";
+        });
+
+        document.getElementById("fontStyle").addEventListener("change", function() {
+            var thumbnailImage = document.getElementById("thumbnailImage");
+            thumbnailImage.style.fontStyle = this.value;
+        });
     </script>
 </body>
 </html>
